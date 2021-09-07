@@ -31,8 +31,8 @@ class SnakeGame {
 	public:
 		SnakeGame(GLint program, float width, int direction, glm::vec3 snake_color, glm::vec3 food_color);
 		void set_snake_head_direction(int direction);
-		void move_snake();
 		void draw();
+		void move_snake();
 		void update();
 	private:
 		void extend_body();

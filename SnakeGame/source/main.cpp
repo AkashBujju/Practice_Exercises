@@ -61,15 +61,15 @@ int main(void) {
 	game = new SnakeGame(shader->program, 0.13f, 1, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0));
 	/* Init Others */
 
-	float one_sec_time = static_cast<float>(glfwGetTime());
+	float timer = static_cast<float>(glfwGetTime());
 
 	/* Start Loop */
 	while (!glfwWindowShouldClose(window)) {
 		float time_sec = static_cast<float>(glfwGetTime());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		if((time_sec - one_sec_time) >= 0.2f) {
-			one_sec_time = time_sec;
+		if((time_sec - timer) >= 0.2f) {
+			timer = time_sec;
 			game->move_snake();
 			game->update();
 		}

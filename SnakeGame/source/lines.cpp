@@ -19,9 +19,6 @@ SnakeGame::SnakeGame(GLint program, float width, int head_direction, glm::vec3 s
 	extreme_left_x_pos = - (block_dist * floor(virtual_grid_row_count / 2));
 	extreme_down_y_pos = - (block_dist * floor(virtual_grid_col_count / 2));
 
-	std::cout << "x: " << extreme_left_x_pos << std::endl;
-	std::cout << "y: " << extreme_down_y_pos << std::endl;
-
 	{
 		if(((int)floor(virtual_grid_row_count)) % 2 == 0) {
 			std::cout << "-- ERROR: Please change the 'width'. grid row count cannot be even." << std::endl;
@@ -71,8 +68,8 @@ void SnakeGame::extend_body() {
 		rect.position = glm::vec3(0, 0, 0);
 		rect.last_dir = head_direction;
 		rect.next_dir = head_direction;
-		rect.virtual_grid_pos.x = floor(virtual_grid_row_count / 2);
-		rect.virtual_grid_pos.y = floor(virtual_grid_col_count / 2);
+		rect.virtual_grid_pos.x = virtual_grid_row_count / 2 + 1;
+		rect.virtual_grid_pos.y = virtual_grid_col_count / 2 + 1;
 	}
 	else {
 		glm::vec3 last_body_pos = snake[snake_size - 1].position;
@@ -116,22 +113,23 @@ void SnakeGame::extend_body() {
 }
 
 void SnakeGame::reset_food_position() {
-	int row = rand() % virtual_grid_row_count;	
-	int col = rand() % virtual_grid_col_count;	
+	int row = rand() % (virtual_grid_row_count);	
+	int col = rand() % (virtual_grid_col_count);	
 
-	block_dist = width + (width * 0.05f);
-	float x_pos = extreme_left_x_pos + row * (block_dist) + width / 2.0f;
-	float y_pos = extreme_down_y_pos + col * (block_dist) + width / 2.0f;
+	row += 1;
+	col += 1;
+	
+	int updated_row = row - (virtual_grid_row_count / 2 + 1);
+	int updated_col = col - (virtual_grid_col_count / 2 + 1);
 
-	food.virtual_grid_pos.x = row;
-	food.virtual_grid_pos.y = col;
+	float to_add = width + (width * 0.05f);
+	float x_pos = updated_col * (to_add);
+	float y_pos = updated_row * (to_add);
+
+	food.virtual_grid_pos.x = col;
+	food.virtual_grid_pos.y = row;
 	food.position.x = x_pos;
 	food.position.y = y_pos;
-
-	std::cout << "grid_x: " << row << std::endl;
-	std::cout << "grid_y: " << col << std::endl;
-	std::cout << "pos.x: " << food.position.x << std::endl;
-	std::cout << "pos.y: " << food.position.y << std::endl;
 }
 
 void SnakeGame::update() {
