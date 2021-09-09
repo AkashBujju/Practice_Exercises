@@ -3,8 +3,9 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <cmath>
+#include <ctime>
 #include "shader.h"
-#include "snake_game.h"
+#include "rects.h"
 
 void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -15,12 +16,17 @@ void reload_shader();
 float map(float src, float src_start, float src_end, float des_start, float des_end);
 float to_radians(float degree);
 float magnitude(glm::vec2 vec);
+void quick_sort(std::vector<float> &arr, int low, int high);
+int partition (std::vector<float> &arr, int low, int high);
+void swap(std::vector<float> &arr, int index_0, int index_1);
 
 Shader* shader;
-SnakeGame *game;
+std::vector<glm::vec2> swap_indices;
 
 int main(void) {
 	cout << "Started Main...\n\n";
+
+	srand(time(0));
 
 	/* Init OpenGL */
 	glfwInit();
@@ -36,7 +42,7 @@ int main(void) {
 	/* Make Window */
 	unsigned int window_width = 800;
 	unsigned int window_height = 800;
-	const char* window_name = "Mandlebrot Set";
+	const char* window_name = "QuickSort_Viz";
 	GLFWwindow* window = glfwCreateWindow(window_width, window_height, window_name, NULL, NULL);
 	/* Make Window */
 
@@ -58,7 +64,28 @@ int main(void) {
 	shader = new Shader("..\\shaders\\vertex_shader.glsl", "..\\shaders\\fragment_shader.glsl");
 	reload_shader();
 
-	game = new SnakeGame(shader->program, 0.13f, 1, glm::vec3(1, 0, 0), glm::vec3(0, 1, 0));
+	std::vector<glm::vec3> colors;
+	std::vector<float> numbers;
+
+	for(unsigned int i = 0; i < 100; ++i) {
+		float r = rand() % 255;
+		float g = rand() % 255;
+		float b = rand() % 255;
+		r = map(r, 0, 255, 0, 1);
+		g = map(g, 0, 255, 0, 1);
+		b = map(b, 0, 255, 0, 1);
+		colors.push_back(glm::vec3(r, g, b));
+
+		float number = rand() % 100;
+		numbers.push_back(number);
+	}
+	
+	std::vector<float> numbers_copy(numbers);
+	quick_sort(numbers, 0, numbers.size() - 1);
+
+	Rects lines;
+	int current_index = 0;
+	lines.init(shader->program, colors, numbers_copy);
 	/* Init Others */
 
 	float timer = static_cast<float>(glfwGetTime());
@@ -70,11 +97,12 @@ int main(void) {
 
 		if((time_sec - timer) >= 0.2f) {
 			timer = time_sec;
-			game->move_snake();
-			game->update();
+			if(current_index < swap_indices.size())
+				lines.swap_positions(swap_indices[current_index].x, swap_indices[current_index].y);
+			current_index += 1;
 		}
 
-		game->draw();
+		lines.draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -84,6 +112,37 @@ int main(void) {
 
 	cout << "\nEnded Main..\n";
 	return 0;
+}
+
+void swap(std::vector<float> &arr, int index_0, int index_1) {
+	float tmp = arr[index_0];
+	arr[index_0] = arr[index_1];
+	arr[index_1] = tmp;
+
+	swap_indices.push_back(glm::vec2(index_0, index_1));
+}
+
+int partition (std::vector<float> &arr, int low, int high) {
+	float pivot = arr[high];
+	int i = (low - 1);
+
+	for (int j = low; j <= high- 1; j++) {
+		if (arr[j] <= pivot) {
+			i++;
+			swap(arr, i, j);
+		}
+	}
+
+	swap(arr, i + 1, high);
+	return (i + 1);
+}
+
+void quick_sort(std::vector<float> &arr, int low, int high) {
+	if (low < high) {
+		int pi = partition(arr, low, high);
+		quick_sort(arr, low, pi - 1);
+		quick_sort(arr, pi + 1, high);
+	}
 }
 
 float magnitude(glm::vec2 vec) {
@@ -105,18 +164,6 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_ESCAPE)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
-		else if(key == GLFW_KEY_W) {
-			game->set_snake_head_direction(4);
-		}
-		else if(key == GLFW_KEY_S) {
-			game->set_snake_head_direction(3);
-		}
-		else if(key == GLFW_KEY_D) {
-			game->set_snake_head_direction(2);
-		}
-		else if(key == GLFW_KEY_A) {
-			game->set_snake_head_direction(1);
-		}
 	}
 }
 

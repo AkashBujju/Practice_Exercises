@@ -1,4 +1,4 @@
-#include "lines.h"
+#include "snake_game.h"
 #include <cstdlib>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
