@@ -6,13 +6,14 @@
 
 struct Number {
 	GLuint vao;
-	GLuint vbo;
 	float number;
 	float x_position;
 };
 
 struct Rects {
 	GLint program;
+	GLuint vbo;
+
 	float per_width;
 	std::vector<Number> numbers;
 

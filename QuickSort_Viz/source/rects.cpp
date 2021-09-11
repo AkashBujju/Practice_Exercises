@@ -53,9 +53,9 @@ void Rects::add_number(float num, float x_pos, float height, glm::vec3 color) {
 	};
 
 	glGenVertexArrays(1, &number.vao);
-	glGenBuffers(1, &number.vbo);
+	glGenBuffers(1, &vbo);
 	glBindVertexArray(number.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, number.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
