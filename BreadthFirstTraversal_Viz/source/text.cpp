@@ -124,11 +124,11 @@ void render_text(Font *font, unsigned int program, const char* text, float scale
 	for(int i = 0; i < text_length; ++i) {
 		int ascii = (int)text[i];
 		Character *character = &font->characters[ascii];
-		GLfloat w = character->size.x * scale;
 		GLfloat h = character->size.y * scale;
-		width_to_sub += w;
 		height_to_sub += h;
+		tmp_x += (character->advance >> 6) * scale;
 	}
+	width_to_sub = tmp_x - x;
 	height_to_sub /= text_length;
 	width_to_sub /= 2.0f;
 	height_to_sub /= 2.0f;
