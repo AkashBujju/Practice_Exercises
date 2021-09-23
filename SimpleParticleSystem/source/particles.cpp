@@ -6,8 +6,9 @@
 extern float map(float src, float src_start, float src_end, float des_start, float des_end);
 extern float to_radians(float degree);
 
-ParticleSystem::ParticleSystem(GLint program, unsigned int num_particles, float radius, glm::vec4 color, glm::vec2 initial_pos) {
+ParticleSystem::ParticleSystem(GLint program, unsigned int num_particles, float radius, glm::vec4 color, glm::vec2 initial_pos, int direction) {
 	this->program = program;
+	this->direction = direction;
 	initial_position = initial_pos;
 	max_particles = num_particles;
 	initial_color = color;
@@ -43,18 +44,38 @@ ParticleSystem::ParticleSystem(GLint program, unsigned int num_particles, float 
 
 	for(unsigned int i = 0; i < max_particles; ++i) {
 		colors.push_back(glm::vec4(color.x, color.y, color.z, color.a));
-		accelerations.push_back(glm::vec2(0, -0.000005f));
+		if(direction == 1)
+			accelerations.push_back(glm::vec2(0, -0.000005f));
+		if(direction == 2)
+			accelerations.push_back(glm::vec2(0, +0.000005f));
+		if(direction == 3)
+			accelerations.push_back(glm::vec2(-0.000005f, 0));
+		if(direction == 4)
+			accelerations.push_back(glm::vec2(+0.000005f, 0));
 	}
 }
 
 void ParticleSystem::add_new_particle() {
-
 	unsigned int current_index = positions.size();
 	positions.push_back(glm::vec2(initial_position.x, initial_position.y));
 	float vel_x = (float) rand() / (float) RAND_MAX;
 	float vel_y = (float) rand() / (float) RAND_MAX;
-	vel_x = map(vel_x, 0, 1, -0.0002f, +0.0002f);
-	vel_y = map(vel_y, 0, 1, 0.002f, +0.0035f);
+	if(direction == 1) {
+		vel_x = map(vel_x, 0, 1, -0.0002f, +0.0002f);
+		vel_y = map(vel_y, 0, 1, 0.002f, +0.0035f);
+	}
+	else if(direction == 2) {
+		vel_x = map(vel_x, 0, 1, -0.0002f, +0.0002f);
+		vel_y = map(vel_y, 0, 1, -0.002f, -0.0035f);
+	}
+	else if(direction == 3) {
+		vel_x = map(vel_x, 0, 1, +0.002f, +0.0035f);
+		vel_y = map(vel_y, 0, 1, -0.0002f, +0.0002f);
+	}
+	else if(direction == 4) {
+		vel_x = map(vel_x, 0, 1, -0.002f, -0.0035f);
+		vel_y = map(vel_y, 0, 1, -0.0002f, +0.0002f);
+	}
 	velocities.push_back(glm::vec2(vel_x, vel_y));
 	vaos.push_back(0);
 
@@ -65,7 +86,6 @@ void ParticleSystem::add_new_particle() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num_floats, vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
 }
 
 void ParticleSystem::update() {

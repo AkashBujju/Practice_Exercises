@@ -18,9 +18,10 @@ struct ParticleSystem {
 	unsigned int max_particles;
 	unsigned int num_floats;
 	float *vertices;
+	int direction;
 
 	public:
-	ParticleSystem(GLint program, unsigned int num_particles, float radius, glm::vec4 color, glm::vec2 initial_pos);
+	ParticleSystem(GLint program, unsigned int num_particles, float radius, glm::vec4 color, glm::vec2 initial_pos, int direction);
 	void add_new_particle();
 	void update();
 	void draw();
