@@ -67,7 +67,6 @@ int main(void) {
 	/* Init Shaders */
 	shader = new Shader("..\\shaders\\vertex_shader.glsl", "..\\shaders\\fragment_shader.glsl");
 	shader->reload_shader();
-	std::
 	/* Init Shaders */
 
 	/* Init Others */
